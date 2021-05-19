@@ -3,12 +3,12 @@ import java.awt.image.BufferedImage;
 import java.util.Stack;
 
 class Point {
-    int x, y, state;
+    int x, y, direction;
 
-    public Point(int x, int y, int state) {
+    public Point(int x, int y, int direction) {
         this.x = x;
         this.y = y;
-        this.state = state;
+        this.direction = direction;
     }
 }
 
@@ -16,7 +16,7 @@ class Point {
 public class Painter {
 
     private final BufferedImage image;
-    private Color painterColor;             // Farba, ktorou kreslime
+    private Color colorToFill;             // Farba, ktorou kreslime
     private Color initialColor;             // Farba, ktoru porovnavame
 
     final double deviation = 255 * 0.05;    // Maximalna dovolena odchylka
@@ -27,45 +27,42 @@ public class Painter {
         this.image = image;
     }
 
-    public BufferedImage bucketFill(int x, int y, Color c) {
-        painterColor = c;
+    public void bucketFill(int x, int y, Color c) {
+        colorToFill = c;
         initialColor = new Color(image.getRGB(x, y));
 
-        stack.push(new Point(x,y,0));
-        while(!stack.empty()) {
+        stack.push(new Point(x, y, 0));
+        while (!stack.empty()) {
             paintPixel();
         }
-
-        return image;
     }
 
+    public BufferedImage getImage() {
+        return image;
+    }
 
     private void paintPixel() {
         Point p = stack.pop();
 
-        int x=-1,y=-1;
+        int x = p.x, y = p.y;
 
-        switch (p.state) {
+        switch (p.direction) {
             case 0: //Doprava
-                x = p.x + 1;
-                y = p.y;
+                x += 1;
                 break;
             case 1: //Dole
-                x = p.x;
-                y = p.y + 1;
+                y += 1;
                 break;
             case 2: //Dolava
-                x = p.x - 1;
-                y = p.y;
+                x -= 1;
                 break;
             case 3: //Hore
-                x = p.x;
-                y = p.y - 1;
+                y -= 1;
                 break;
         }
 
-        if(p.state <3) {    // Ak sme presli vsetky smery pri tomto bode tak uz ho nepridavame
-            stack.push(new Point(p.x,p.y,p.state+1));
+        if (p.direction < 3) {    // Ak sme presli vsetky smery pri tomto bode tak uz ho nepridavame
+            stack.push(new Point(p.x, p.y, p.direction + 1));
         }
 
         // Ak je novy bod mimo obrazku - koniec
@@ -75,7 +72,7 @@ public class Painter {
 
         Color foundColor = new Color(image.getRGB(x, y));   // Farba aktualneho pixelu
 
-        // Ak hranici s farbou, ktora nie je pribuzna - koniec
+        // Ak farba nie je pribuzna - koniec
         if (Math.abs(foundColor.getBlue() - initialColor.getBlue()) > deviation ||
                 Math.abs(foundColor.getRed() - initialColor.getRed()) > deviation ||
                 Math.abs(foundColor.getGreen() - initialColor.getGreen()) > deviation ||
@@ -83,8 +80,8 @@ public class Painter {
             return;
         }
 
-        image.setRGB(x, y, painterColor.getRGB());
-        stack.push(new Point(x,y,0));
+        image.setRGB(x, y, colorToFill.getRGB());
+        stack.push(new Point(x, y, 0));
     }
 
 }

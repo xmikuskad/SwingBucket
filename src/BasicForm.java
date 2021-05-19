@@ -5,11 +5,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class BasicForm extends JPanel{
+public class BasicForm extends JPanel {
 
     final String imgPath = "obr.bmp";
     BufferedImage img;
 
+    // Farba, ktorou budeme vyfarbovat
     final Color colorToFill = new Color(0, 255, 0, 255);
 
     public BasicForm() {
@@ -18,18 +19,18 @@ public class BasicForm extends JPanel{
         add(xPos);
 
         JTextField xPosField = new JTextField();
-        xPosField.setPreferredSize(new Dimension(70,30));
+        xPosField.setPreferredSize(new Dimension(70, 30));
         add(xPosField);
 
         JLabel yPos = new JLabel("Y position");
         add(yPos);
 
         JTextField yPosField = new JTextField();
-        yPosField.setPreferredSize(new Dimension(70,30));
+        yPosField.setPreferredSize(new Dimension(70, 30));
         add(yPosField);
 
 
-        //Nacitanie obrazku
+        // Nacitanie obrazku
         JLabel imageLabel = new JLabel();
         BufferedImage image = null;
         try {
@@ -39,18 +40,20 @@ public class BasicForm extends JPanel{
         }
 
         JButton fillBtn = new JButton("Fill");
+        BufferedImage finalImage = image;
 
-        BufferedImage finalImage1 = image;
-        fillBtn.addActionListener(e-> {
-            Painter painter = new Painter(finalImage1);
+        fillBtn.addActionListener(e -> {
+            Painter painter = new Painter(finalImage);
 
-            try {   // V pripade ak by napr nebolo zadane cislo
+            try {
+                // V pripade ak by napr nebolo zadane cislo ale string alebo prilis vysoka hodnota...
                 int x = Integer.parseInt(xPosField.getText());
                 int y = Integer.parseInt(yPosField.getText());
 
-                img = painter.bucketFill(x, y, colorToFill);
+                painter.bucketFill(x, y, colorToFill);
+                img = painter.getImage();
                 imageLabel.setIcon(new ImageIcon(img));
-            }catch (Exception e2) {
+            } catch (Exception e2) {
                 e2.printStackTrace();
             }
         });
@@ -64,6 +67,6 @@ public class BasicForm extends JPanel{
         frame.setContentPane(new BasicForm());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        frame.setSize(new Dimension(800,800));
+        frame.setSize(new Dimension(800, 800));
     }
 }
