@@ -10,7 +10,10 @@ public class BasicForm extends JPanel{
     final String imgPath = "obr.bmp";
     BufferedImage img;
 
+    final Color colorToFill = new Color(0, 255, 0, 255);
+
     public BasicForm() {
+        // Vstupne polia a oznacenia
         JLabel xPos = new JLabel("X position");
         add(xPos);
 
@@ -25,8 +28,9 @@ public class BasicForm extends JPanel{
         yPosField.setPreferredSize(new Dimension(70,30));
         add(yPosField);
 
-        JLabel lbl = new JLabel();
-        //Load image
+
+        //Nacitanie obrazku
+        JLabel imageLabel = new JLabel();
         BufferedImage image = null;
         try {
             image = ImageIO.read(new File(imgPath));
@@ -34,37 +38,25 @@ public class BasicForm extends JPanel{
             e.printStackTrace();
         }
 
-        JButton btn = new JButton("Click");
+        JButton fillBtn = new JButton("Fill");
 
         BufferedImage finalImage1 = image;
-        btn.addActionListener(e-> {
+        fillBtn.addActionListener(e-> {
             Painter painter = new Painter(finalImage1);
 
-            try {
+            try {   // V pripade ak by napr nebolo zadane cislo
                 int x = Integer.parseInt(xPosField.getText());
                 int y = Integer.parseInt(yPosField.getText());
 
-                img = painter.bucketFill(x, y, new Color(0, 255, 0, 255));
-                lbl.setIcon(new ImageIcon(img));
+                img = painter.bucketFill(x, y, colorToFill);
+                imageLabel.setIcon(new ImageIcon(img));
             }catch (Exception e2) {
                 e2.printStackTrace();
             }
         });
 
-        JButton save = new JButton("Save");
-        save.addActionListener(e-> {
-            try {
-                File outputfile = new File("saved.png");
-                ImageIO.write(img, "png", outputfile);
-            } catch (IOException e3) {
-                // handle exception
-            }
-        });
-
-        add(btn);
-        add(lbl);
-
-        add(save);
+        add(fillBtn);
+        add(imageLabel);
     }
 
     public static void main(String[] args) {
